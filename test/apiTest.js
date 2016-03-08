@@ -58,6 +58,17 @@ describe('API routes', function() {
         });
     });
 
+    beforeEach(function(done) {
+        knex.migrate.rollback().then(function() {
+            knex.migrate.latest()
+            .then(function() {
+                return knex.seed.run().then(function() {
+                    done();
+                });
+            });
+        });
+    });
+
     describe('Get single show', function() {
 
         it('should get one show', function(done) {
@@ -91,24 +102,68 @@ describe('API routes', function() {
         });
     });
 
+    beforeEach(function(done) {
+        knex.migrate.rollback().then(function() {
+            knex.migrate.latest()
+            .then(function() {
+                return knex.seed.run().then(function() {
+                    done();
+                });
+            });
+        });
+    });
+
     describe('Add a single show', function(){
-        it('should add a single show', function(done){
+        it('should POST a show', function(done) {
             chai.request(server)
             .post('/api/shows')
             .send({
-                name: 'testing',
-                channel: 'whatever',
-                genre: 'great',
+                name: 'new show',
+                channel : 'ABC',
+                genre: 'Anything',
                 rating: 1,
                 explicit: false
             })
-            .end(function(err, res){
+            .end(function(err, res) {
                 chai.request(server)
-                .get('/api/show'+res.body[0])
-                .end(function(err, res){
-                    //test code
-                    res.should.have.status(200);
-                    res.should.be.json;
+                .get('/api/show/' + res.body[0])
+                .end(function(error, response) {
+                //test code
+                    response.body.should.be.a('array');
+                    response.body.length.should.equal(1);
+                    response.body[0].should.have.property('name');
+                    response.body[0].name.should.equal('new show');
+                    response.body[0].should.have.property('channel');
+                    response.body[0].channel.should.equal('ABC');
+                    response.body[0].should.have.property('genre');
+                    response.body[0].genre.should.equal('Anything');
+                    response.body[0].should.have.property('rating');
+                    response.body[0].rating.should.equal(1);
+                    response.body[0].should.have.property('explicit');
+                    response.body[0].explicit.should.equal(false);
+                    done();
+                });
+            });
+        });
+    });
+
+    describe('Upate a single show', function(){
+        xit('should update a show', function(done) {
+            chai.request(server)
+            .put('/api/show/1')
+            .send({
+                name: 'Edited Suits',
+                channel : 'New Channel',
+                genre: 'Drama',
+                rating: 3,
+                explicit: false
+            })
+            .end(function(err, res) {
+                chai.request(server)
+                .get('/api/show/' + res.body)
+                .end(function(error, response) {
+                    //test code to check object
+                    done();
                 });
             });
         });

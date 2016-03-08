@@ -21,11 +21,14 @@ router.get('/show/:id', function(req, res, next) {
 });
 
 router.post('/shows', function(req, res, next) {
-  Shows().insert({name: 'testing',
-                  channel: 'whatever',
-                  genre: 'great',
-                  rating: 1,
-                  explicit: false})
+  Shows().insert(req.body, 'id')
+    .then(function(result) {
+      res.status(200).json(result);
+  });
+});
+
+router.post('/shows', function(req, res, next) {
+  Shows().insert(req.body, 'id')
     .then(function(result) {
       res.status(200).json(result);
   });
