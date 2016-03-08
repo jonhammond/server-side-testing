@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
     table.string('genre');
     table.integer('rating');
     table.boolean('explicit');
-  })
+  });
 };
 
 exports.down = function(knex, Promise) {
